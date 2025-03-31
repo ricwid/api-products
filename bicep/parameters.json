@@ -8,6 +8,12 @@
     "appName": {
       "value": "api-products3218"
     },
+    "repoUrl": {
+      "value": "https://github.com/ricwid/api-products"
+    },
+    "resourceGroupName": {
+      "value": "dev-rg-api-products"
+    },
     "hostingPlanSkuName": {
       "value": "B1"
     }

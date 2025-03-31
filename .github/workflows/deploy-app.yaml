@@ -11,24 +11,56 @@ jobs:
     environment: dev
 
     steps:
+      # Step 1: Checkout Repository
       - name: Checkout repository
         uses: actions/checkout@v3
+          
+      # Step 2: Install Required Tools
+      # Ensure `jq` is installed on the runner.
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install jq -y
 
+      # Step 3: Log in to Azure
+      # Authenticate with Azure using a service principal.
       - name: Log in to Azure
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-        
+          
+      # Step 4: Load Parameters
+      # Parses parameters.json into environment variables (e.g., $APP_NAME, $RESOURCE_GROUP, etc.)
+      - name: Load Bicep parameters
+        id: load-parameters
+        run: |
+          echo "Loading parameters from parameters file..."
+          PARAM_FILE=./bicep/parameters.json
+          export APP_NAME=$(jq -r '.parameters.appName.value' $PARAM_FILE)
+          export RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' $PARAM_FILE)
+          export REPO_URL=$(jq -r '.parameters.repoUrl.value' $PARAM_FILE)
+          echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+          echo "RESOURCE_GROUP=$RESOURCE_GROUP" >> $GITHUB_ENV      
+          echo "REPO_URL=REPO_URL" >> $GITHUB_ENV      
+
+      # Step 5: Deploy Azure Infrastructure Using Bicep
+      # Deploy resources (App Service, App Insights, etc.) using the Bicep template.
       - name: Deploy Bicep file to Azure
         uses: azure/arm-deploy@v1
         with:
           scope: resourcegroup
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          resourceGroupName: dev-rg-api-products # Replace with your Azure Resource Group Name
+          resourceGroupName: ${{ env.RESOURCE_GROUP }}
           template: ./bicep/main.bicep  # Path to your Bicep file in the repository
           parameters: ./bicep/parameters.json # Path to your parameter file in the repository
-          deploymentMode: Incremental
-
-      - name: Output Deployment URLs
+          deploymentMode: Incremental          
+      
+      # Step 6: Deploy Application Code
+      # Push your application code to the deployed App Service.      
+      - name: Deploy Application Code
         run: |
-          echo "Web App URL: $(az webapp show --name api-products3218 --resource-group dev-rg-api-products --query defaultHostName)"
+          az webapp deployment source config \
+            --name ${{ env.APP_NAME }}  \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --repo-url ${{ env.REPO_URL }} \
+            --branch main \
+            --manual-integration
+
