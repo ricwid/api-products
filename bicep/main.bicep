@@ -1,6 +1,8 @@
 ﻿param location string = resourceGroup().location
 param appName string
 param hostingPlanSkuName string
+param repoUrl string
+param resourceGroupName string
 
 // Resource group for App Service Plan
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
