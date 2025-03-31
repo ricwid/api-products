@@ -31,4 +31,4 @@ jobs:
 
       - name: Output Deployment URLs
         run: |
-          echo "Web App URL: $(az webapp show --name api-products --resource-group dev-rg-api-products --query defaultHostName)"
+          echo "Web App URL: $(az webapp show --name api-products3218 --resource-group dev-rg-api-products --query defaultHostName)"
