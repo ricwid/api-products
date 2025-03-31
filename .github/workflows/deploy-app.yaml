@@ -25,7 +25,7 @@ jobs:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resourceGroupName: dev-rg-api-products # Replace with your Azure Resource Group Name
           template: ./bicep/main.bicep  # Path to your Bicep file in the repository
-          parameters: ./bicep/parameters.yaml # Path to your YAML parameter file in the repository
+          parameters: ./bicep/parameters.yaml # Path to your YAML parameter file in the  repository
           deploymentMode: Incremental
 
       - name: Output Deployment URLs
