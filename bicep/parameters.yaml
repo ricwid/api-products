@@ -1,0 +1,3 @@
+﻿location: "swedencentral"         # Azure region for deployment
+appName: "api-products"      # Name of the application
+hostingPlanSkuName: "B1"       # SKU for App Service Plan
