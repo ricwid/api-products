@@ -52,7 +52,11 @@ jobs:
           template: ./bicep/main.bicep  # Path to your Bicep file in the repository
           parameters: ./bicep/parameters.json # Path to your parameter file in the repository
           deploymentMode: Incremental          
-      
+
+      - name: Reset Deployment Source
+        run: |
+          az webapp deployment source delete --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.APP_NAME }}
+
       # Step 6: Deploy Application Code
       # Push your application code to the deployed App Service.      
       - name: Deploy Application Code
