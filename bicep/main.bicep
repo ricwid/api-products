@@ -53,6 +53,14 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
           name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
           value: '~3'
         }
+        {   
+          name: 'DUMMY_REPO_URL'
+          value: repoUrl 
+        }
+        {
+          name: 'DUMMY_RESOURCE_GROUP_NAME'
+          value: resourceGroupName 
+        }
       ]
     }
   }
