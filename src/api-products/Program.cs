@@ -18,12 +18,10 @@ var app = builder.Build();
 app.MapOpenApi();
 app.UseHttpsRedirection();
 
-// 1. Get All Products
 app.MapGet("/products", () => Results.Ok(products))
     .WithName("GetAllProducts")
     .WithTags("Products");
 
-// 2. Get Product by ID
 app.MapGet("/products/{id}", (int id) =>
     {
         var product = products.FirstOrDefault(p => p.Id == id);
@@ -32,7 +30,6 @@ app.MapGet("/products/{id}", (int id) =>
     .WithName("GetProductById")
     .WithTags("Products");
 
-// 3. Create Product
 app.MapPost("/products", (Product newProduct) =>
     {
         products.Add(newProduct);
@@ -41,7 +38,6 @@ app.MapPost("/products", (Product newProduct) =>
     .WithName("CreateProduct")
     .WithTags("Products");
 
-// 4. Update Product
 app.MapPut("/products/{id}", (int id, Product updatedProduct) =>
     {
         var product = products.FirstOrDefault(p => p.Id == id);
