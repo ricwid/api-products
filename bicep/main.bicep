@@ -75,6 +75,7 @@ output rUrl string = repoUrl
 output rgName string = resourceGroupName
 output serviceName string = apim.serviceName
 output apiPath string = apim.apiPath
+output apiUrl string = apim.apiUrl
 output apiSpecUrl string = apim.apiSpecUrl
 output apiId string = apim.apiId
 output apiRevision string = apim.apiRevision

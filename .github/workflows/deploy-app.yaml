@@ -40,6 +40,7 @@ jobs:
           export APIM_RESOURCE_GROUP=$(jq -r '.parameters.apim.value.resourceGroup' $PARAM_FILE)
           export APIM_SERVICENAME=$(jq -r '.parameters.apim.value.serviceName' $PARAM_FILE)
           export APIM_API_PATH=$(jq -r '.parameters.apim.value.apiPath' $PARAM_FILE)
+          export APIM_API_URL=$(jq -r '.parameters.apim.value.apiUrl' $PARAM_FILE)
           export APIM_API_SPEC=$(jq -r '.parameters.apim.value.apiSpecUrl' $PARAM_FILE)
           export APIM_API_ID=$(jq -r '.parameters.apim.value.apiId' $PARAM_FILE)
           export APIM_API_REVISION=$(jq -r '.parameters.apim.value.apiRevision' $PARAM_FILE)
@@ -49,6 +50,7 @@ jobs:
           echo "APIM_RESOURCE_GROUP=$APIM_RESOURCE_GROUP" >> $GITHUB_ENV      
           echo "APIM_SERVICENAME=$APIM_SERVICENAME" >> $GITHUB_ENV      
           echo "APIM_API_PATH=$APIM_API_PATH" >> $GITHUB_ENV      
+          echo "APIM_API_URL=$APIM_API_URL" >> $GITHUB_ENV      
           echo "APIM_API_SPEC=$APIM_API_SPEC" >> $GITHUB_ENV      
           echo "APIM_API_ID=$APIM_API_ID" >> $GITHUB_ENV      
           echo "APIM_API_REVISION=$APIM_API_REVISION" >> $GITHUB_ENV      
@@ -90,7 +92,13 @@ jobs:
             --specification-format OpenApi \
             --specification-url ${{ env.APIM_API_SPEC }} \
             --api-id ${{ env.APIM_API_ID }} \
-            --api-revision ${{ env.APIM_API_REVISION }} 
+            --api-revision ${{ env.APIM_API_REVISION }}
+          
+          az apim api update \
+                --resource-group ${{ env.APIM_RESOURCE_GROUP }} \
+                --service-name ${{ env.APIM_SERVICENAME }} \
+                --api-id ${{ env.APIM_API_ID }} \
+                --set serviceUrl=${{ env.APIM_API_URL }}        
         env:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
