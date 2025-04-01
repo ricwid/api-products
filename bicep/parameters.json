@@ -16,6 +16,15 @@
     },
     "hostingPlanSkuName": {
       "value": "B1"
+    },
+    "apim": {
+      "value": {
+        "serviceName": "apim9999", 
+        "apiPath": "api/products",
+        "apiSpecUrl": "https://api-products3218.azurewebsites.net/openapi/v1.json",
+        "apiId": "api-products-v1",
+        "apiRevision": "1"
+      }
     }
   }
 }

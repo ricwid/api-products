@@ -37,9 +37,19 @@ jobs:
           export APP_NAME=$(jq -r '.parameters.appName.value' $PARAM_FILE)
           export RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' $PARAM_FILE)
           export REPO_URL=$(jq -r '.parameters.repoUrl.value' $PARAM_FILE)
+          export APIM_SERVICENAME=$(jq -r '.parameters.apim.serviceName.value' $PARAM_FILE)
+          export APIM_API_PATH=$(jq -r '.parameters.apim.apiPath.value' $PARAM_FILE)
+          export APIM_API_SPEC=$(jq -r '.parameters.apim.apiSpecUrl.value' $PARAM_FILE)
+          export APIM_API_ID=$(jq -r '.parameters.apim.apiId.value' $PARAM_FILE)
+          export APIM_API_REVISION=$(jq -r '.parameters.apim.revision.value' $PARAM_FILE)
           echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
           echo "RESOURCE_GROUP=$RESOURCE_GROUP" >> $GITHUB_ENV      
           echo "REPO_URL=$REPO_URL" >> $GITHUB_ENV      
+          echo "APIM_SERVICENAME=$APIM_SERVICENAME" >> $GITHUB_ENV      
+          echo "APIM_API_PATH=$APIM_API_PATH" >> $GITHUB_ENV      
+          echo "APIM_API_SPEC=$APIM_API_SPEC" >> $GITHUB_ENV      
+          echo "APIM_API_ID=$APIM_API_ID" >> $GITHUB_ENV      
+          echo "APIM_API_REVISION=$APIM_API_REVISION" >> $GITHUB_ENV      
 
       # Step 5: Deploy Azure Infrastructure Using Bicep
       # Deploy resources (App Service, App Insights, etc.) using the Bicep template.
@@ -67,4 +77,18 @@ jobs:
             --repo-url ${{ env.REPO_URL }} \
             --branch main \
             --manual-integration
+          
+      # Step 7: Update API Management with OpenAPI Spec
+      - name: Update API Management with OpenAPI Spec
+        run: |
+          az apim api import \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --service-name ${{ env.APIM_SERVICENAME }} \
+            --path ${{ env.APIM_API_PATH }} \
+            --specification-url ${{ env.APIM_API_SPEC }}  \
+            --api-id ${{ env.APIM_API_ID }} \
+            --api-revision ${{ env.APIM_API_REVISION }} 
+        env:
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
 
