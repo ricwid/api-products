@@ -85,7 +85,7 @@ jobs:
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --service-name ${{ env.APIM_SERVICENAME }} \
             --path ${{ env.APIM_API_PATH }} \
-            --specification-format OpenApi
+            --specification-format OpenApi \
             --specification-url ${{ env.APIM_API_SPEC }} \
             --api-id ${{ env.APIM_API_ID }} \
             --api-revision ${{ env.APIM_API_REVISION }} 
