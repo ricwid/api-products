@@ -59,7 +59,9 @@ app.MapPut("/products/{id}", (int id, Product updatedProduct) =>
     .WithName("UpdateProduct")
     .WithTags("Products");
 
-
+app.MapGet("/ping", () => Results.Ok("pong"))
+    .WithName("Ping")
+    .WithTags("Products");
 
 app.Run();
 
