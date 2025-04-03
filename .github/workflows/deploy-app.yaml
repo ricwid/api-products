@@ -67,10 +67,6 @@ jobs:
           parameters: ./bicep/parameters.json # Path to your parameter file in the repository
           deploymentMode: Incremental          
 
-      - name: Reset Deployment Source
-        run: |
-          az webapp deployment source delete --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.APP_NAME }}
-
       # Step 6: Deploy Application Code
       # Push your application code to the deployed App Service.      
       - name: Deploy Application Code
@@ -81,25 +77,26 @@ jobs:
             --repo-url ${{ env.REPO_URL }} \
             --branch main \
             --manual-integration
-          
-      # Step 7: Update API Management with OpenAPI Spec
-      - name: Update API Management with OpenAPI Spec
+      
+
+      - name: Trigger API Management Update Workflow
+        if: ${{ success() }} # Only triggers if previous steps succeed
         run: |
-          az apim api import \
-            --resource-group ${{ env.APIM_RESOURCE_GROUP }} \
-            --service-name ${{ env.APIM_SERVICENAME }} \
-            --path ${{ env.APIM_API_PATH }} \
-            --specification-format OpenApi \
-            --specification-url ${{ env.APIM_API_SPEC }} \
-            --api-id ${{ env.APIM_API_ID }} \
-            --api-revision ${{ env.APIM_API_REVISION }}
-          
-          az apim api update \
-                --resource-group ${{ env.APIM_RESOURCE_GROUP }} \
-                --service-name ${{ env.APIM_SERVICENAME }} \
-                --api-id ${{ env.APIM_API_ID }} \
-                --set serviceUrl=${{ env.APIM_API_URL }}        
-        env:
-          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          curl -X POST -H "Accept: application/vnd.github.everest-preview+json" \
+            -H "Authorization: token ${{ secrets.APIM_TRIGGER_TOKEN }}" \
+            https://api.github.com/repos/<apim-repo-owner>/<apim-repo-name>/dispatches \
+            -d '{
+              "event_type": "trigger-api-management",
+              "client_payload": {
+                "apim_service_name": "'${{ env.APIM_SERVICENAME }}'",
+                "backend_api_url": "'${{ env.APIM_API_URL }}'",
+                "resource_group": "'${{ env.RESOURCE_GROUP }}'",
+                "api_path": "'${{ env.APIM_API_PATH }}'",
+                "api_spec": "'${{ env.APIM_API_SPEC }}'",
+                "api_id": "'${{ env.APIM_API_ID }}'",
+                "api_revision": "'${{ env.APIM_API_REVISION }}'"
+              }
+            }'
+        
 
 
