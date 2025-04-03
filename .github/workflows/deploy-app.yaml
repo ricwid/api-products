@@ -11,24 +11,17 @@ jobs:
     environment: dev
 
     steps:
-      # Step 1: Checkout Repository
       - name: Checkout repository
         uses: actions/checkout@v3
           
-      # Step 2: Install Required Tools
-      # Ensure `jq` is installed on the runner.
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install jq -y
 
-      # Step 3: Log in to Azure
-      # Authenticate with Azure using a service principal.
       - name: Log in to Azure
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           
-      # Step 4: Load Parameters
-      # Parses parameters.json into environment variables (e.g., $APP_NAME, $RESOURCE_GROUP, etc.)
       - name: Load Bicep parameters
         id: load-parameters
         run: |
@@ -55,20 +48,16 @@ jobs:
           echo "APIM_API_ID=$APIM_API_ID" >> $GITHUB_ENV      
           echo "APIM_API_REVISION=$APIM_API_REVISION" >> $GITHUB_ENV      
 
-      # Step 5: Deploy Azure Infrastructure Using Bicep
-      # Deploy resources (App Service, App Insights, etc.) using the Bicep template.
       - name: Deploy Bicep file to Azure
         uses: azure/arm-deploy@v1
         with:
           scope: resourcegroup
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resourceGroupName: ${{ env.RESOURCE_GROUP }}
-          template: ./bicep/main.bicep  # Path to your Bicep file in the repository
-          parameters: ./bicep/parameters.json # Path to your parameter file in the repository
+          template: ./bicep/main.bicep  
+          parameters: ./bicep/parameters.json 
           deploymentMode: Incremental          
 
-      # Step 6: Deploy Application Code
-      # Push your application code to the deployed App Service.      
       - name: Deploy Application Code
         run: |
           az webapp deployment source config \
@@ -78,7 +67,6 @@ jobs:
             --branch main \
             --manual-integration
       
-
       - name: Trigger API Management Update Workflow
         if: ${{ success() }} # Only triggers if previous steps succeed
         run: |
@@ -90,7 +78,7 @@ jobs:
               "client_payload": {
                 "apim_service_name": "'${{ env.APIM_SERVICENAME }}'",
                 "backend_api_url": "'${{ env.APIM_API_URL }}'",
-                "resource_group": "'${{ env.RESOURCE_GROUP }}'",
+                "resource_group": "'${{ env.APIM_RESOURCE_GROUP }}'",
                 "api_path": "'${{ env.APIM_API_PATH }}'",
                 "api_spec": "'${{ env.APIM_API_SPEC }}'",
                 "api_id": "'${{ env.APIM_API_ID }}'",
