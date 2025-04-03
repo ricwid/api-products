@@ -84,7 +84,7 @@ jobs:
         run: |
           curl -X POST -H "Accept: application/vnd.github.everest-preview+json" \
             -H "Authorization: token ${{ secrets.APIM_TRIGGER_TOKEN }}" \
-            https://api.github.com/repos/<apim-repo-owner>/<apim-repo-name>/dispatches \
+            https://api.github.com/repos/ricwid/apim/dispatches \
             -d '{
               "event_type": "trigger-api-management",
               "client_payload": {
